@@ -529,7 +529,7 @@ async function pollJob(jobId) {
       .from('video_jobs')
       .select('status, progress, step_label, output_url, error_message')
       .eq('id', jobId)
-      .single()
+      .maybeSingle()
 
     if (data) handleJobUpdate(data)
   } catch {}
