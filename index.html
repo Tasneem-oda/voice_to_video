@@ -245,7 +245,7 @@ async function verifyClient() {
       .from('clients')
       .select('id, name, subscriptions(payment_status, custom_config, custom_parameters)')
       .eq('id', clientId)
-      .single()
+      .maybeSingle()
 
     if (error || !data) {
       return showError('حساب غير موجود', 'لم يُعثر على حسابك. يرجى التواصل مع الدعم.')
