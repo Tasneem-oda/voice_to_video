@@ -19,16 +19,23 @@
     .grid-bg { position:fixed; inset:0; background-image: linear-gradient(rgba(255,255,255,.025) 1px,transparent 1px), linear-gradient(90deg,rgba(255,255,255,.025) 1px,transparent 1px); background-size:60px 60px; pointer-events:none; }
     .page { position:relative; min-height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:2rem 1rem; gap:2rem; }
 
+    /* Auth Overlay */
+    #auth-overlay { position:fixed; inset:0; background:rgba(10,12,16,0.95); backdrop-filter:blur(10px); z-index:9999; display:none; align-items:center; justify-content:center; flex-direction:column; padding:1rem; }
+    .auth-card { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:2.5rem 2rem; text-align:center; width:100%; max-width:400px; box-shadow:var(--glow); animation:fadeUp 0.4s ease; }
+    .auth-card h2 { font-size:1.5rem; margin-bottom:0.5rem; color:var(--text); }
+    .auth-card p { color:var(--muted); font-size:0.9rem; margin-bottom:1.5rem; }
+    .auth-card input { width:100%; padding:1rem; border-radius:10px; border:1px solid var(--border); background:rgba(255,255,255,0.02); color:var(--accent); font-family:'Space Mono',monospace; font-size:1.5rem; text-align:center; letter-spacing:0.5em; margin-bottom:1.5rem; transition:all 0.3s; outline:none; }
+    .auth-card input:focus { border-color:var(--accent); background:rgba(0,229,255,0.05); }
+    .auth-error { color:var(--danger); font-size:0.85rem; margin-top:-1rem; margin-bottom:1rem; display:none; }
+
     /* Header */
     .header { text-align:center; animation:fadeUp .5s .1s ease both; }
     .header h1 { font-size:clamp(1.8rem,5vw,2.8rem); font-weight:700; letter-spacing:-.02em; line-height:1.15; }
     .header h1 em { font-style:normal; background:linear-gradient(135deg,var(--accent),var(--accent2)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
     .header p { margin-top:.75rem; color:var(--muted); font-size:.95rem; font-weight:300; }
 
-    /* Card */
+    /* Card & Drop Zone */
     .card { width:100%; max-width:600px; background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:2rem; box-shadow:var(--glow); animation:fadeUp .5s ease both; }
-
-    /* Drop Zone */
     .drop-zone { border:2px dashed var(--border); border-radius:12px; padding:2.5rem 1.5rem; text-align:center; cursor:pointer; transition:all .25s; position:relative; background:rgba(255,255,255,.015); }
     .drop-zone:hover, .drop-zone.dragover { border-color:var(--accent); background:rgba(0,229,255,.04); }
     .drop-zone input[type="file"] { position:absolute; inset:0; opacity:0; cursor:pointer; width:100%; height:100%; }
@@ -65,45 +72,36 @@
     .clear-selection-btn:hover { color:var(--accent); }
     .random-hint { padding:.5rem .8rem; background:rgba(123,97,255,.07); border:1px solid rgba(123,97,255,.2); border-radius:8px; font-size:.75rem; color:var(--accent2); text-align:center; margin-top:.75rem; }
 
-    /* Loading Videos */
+    /* UI States */
     .videos-loading { text-align:center; padding:2rem; color:var(--muted); font-size:.88rem; }
     .videos-error { padding:.75rem 1rem; background:rgba(255,77,109,.08); border:1px solid rgba(255,77,109,.3); border-radius:8px; color:var(--danger); font-size:.82rem; }
-
-    /* Size Warning */
     .size-warning { display:none; align-items:center; gap:.6rem; margin-top:.6rem; padding:.6rem .9rem; background:rgba(255,193,7,.07); border:1px solid rgba(255,193,7,.3); border-radius:8px; font-size:.78rem; color:#ffc107; line-height:1.45; }
     .size-warning.show { display:flex; }
 
-    /* Submit */
+    /* Submit Button */
     .submit-btn { margin-top:1.5rem; width:100%; padding:.9rem 1.5rem; background:linear-gradient(135deg,var(--accent),var(--accent2)); border:none; border-radius:10px; color:#000; font-family:'IBM Plex Sans Arabic',sans-serif; font-size:1rem; font-weight:600; cursor:pointer; transition:all .25s; display:flex; align-items:center; justify-content:center; gap:.6rem; }
     .submit-btn:hover:not(:disabled) { transform:translateY(-2px); box-shadow:0 8px 30px rgba(0,229,255,.3); }
     .submit-btn:disabled { opacity:.5; cursor:not-allowed; transform:none; }
 
-    /* Compress */
-    #compress-section { display:none; text-align:center; }
-    #compress-section.show { display:block; }
+    /* Processing Sections (Compress, Loading, Result, Error) */
+    #compress-section, #loading-section, #result-section { display:none; text-align:center; }
+    #compress-section.show, #loading-section.show, #result-section.show { display:block; }
     .compress-icon { font-size:2.5rem; margin-bottom:.8rem; animation:breathe 1.5s ease-in-out infinite; display:block; }
-    .compress-title { font-size:1.05rem; font-weight:600; margin-bottom:.3rem; }
-    .compress-sub { color:var(--muted); font-size:.82rem; margin-bottom:1.1rem; }
-    .compress-bar-wrap { background:rgba(255,255,255,.05); border:1px solid var(--border); border-radius:999px; height:6px; overflow:hidden; margin-bottom:.5rem; }
+    .compress-title, .loading-title { font-size:1.05rem; font-weight:600; margin-bottom:.3rem; }
+    .compress-sub, .loading-sub { color:var(--muted); font-size:.82rem; margin-bottom:1.1rem; }
+    .compress-bar-wrap, .progress-bar-wrap { background:rgba(255,255,255,.05); border:1px solid var(--border); border-radius:999px; height:6px; overflow:hidden; margin-bottom:.5rem; }
     .compress-bar-fill { height:100%; width:0%; border-radius:999px; background:linear-gradient(90deg,#ffc107,#ff9800); transition:width .8s ease; }
     .compress-pct { font-family:'Space Mono',monospace; font-size:.72rem; color:#ffc107; }
-
-    /* Loading */
-    #loading-section { display:none; text-align:center; }
-    #loading-section.show { display:block; }
-    #loading-section.failed .loader-wrap, #loading-section.failed .progress-bar-wrap, #loading-section.failed .progress-steps { opacity:.1; filter:grayscale(100%); pointer-events:none; }
+    
     .loader-wrap { position:relative; width:80px; height:80px; margin:0 auto 1rem; }
     .loader-ring { position:absolute; inset:0; border-radius:50%; border:3px solid transparent; animation:spin 1.2s linear infinite; }
     .loader-ring:nth-child(1) { border-top-color:var(--accent); animation-duration:1.2s; }
     .loader-ring:nth-child(2) { border-right-color:var(--accent2); inset:8px; animation-duration:1.8s; animation-direction:reverse; }
     .loader-ring:nth-child(3) { border-bottom-color:var(--success); inset:16px; animation-duration:2.4s; }
     .loader-core { position:absolute; inset:24px; background:radial-gradient(circle,rgba(0,229,255,.2),transparent); border-radius:50%; animation:breathe 2s ease-in-out infinite; }
-    .loading-title { font-size:1.05rem; font-weight:600; margin-bottom:.3rem; }
-    .loading-sub { color:var(--muted); font-size:.82rem; }
-    .progress-bar-wrap { margin:1.1rem 0 .4rem; background:rgba(255,255,255,.05); border:1px solid var(--border); border-radius:999px; height:6px; overflow:hidden; }
     .progress-bar-fill { height:100%; width:0%; border-radius:999px; background:linear-gradient(90deg,var(--accent),var(--accent2)); transition:width 1.2s ease; box-shadow:0 0 8px rgba(0,229,255,.5); }
     .progress-bar-fill::after { content:''; display:block; width:40%; height:100%; background:linear-gradient(90deg,transparent,rgba(255,255,255,.35),transparent); animation:shimmer 1.8s infinite; }
-    @keyframes shimmer { 0%{transform:translateX(-150%)} 100%{transform:translateX(350%)} }
+    
     .timer-row { display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem; font-family:'Space Mono',monospace; font-size:.7rem; color:var(--muted); }
     .timer-row .elapsed { color:var(--accent); }
     .progress-steps { display:flex; flex-direction:column; gap:.45rem; text-align:right; }
@@ -114,13 +112,11 @@
     .step .step-dot { width:8px; height:8px; border-radius:50%; background:var(--muted); flex-shrink:0; transition:background .4s; }
     .step.active .step-dot { background:var(--accent); animation:pulse 1s infinite; }
     .step.done .step-dot { background:var(--success); }
+    
     .tips-box { margin-top:1.1rem; padding:.8rem 1rem; border-radius:10px; background:rgba(123,97,255,.06); border:1px solid rgba(123,97,255,.2); text-align:right; }
     .tips-box .tip-label { font-size:.68rem; font-family:'Space Mono',monospace; color:var(--accent2); letter-spacing:.06em; margin-bottom:.45rem; }
     .tips-box .tip-text { font-size:.8rem; color:var(--text); line-height:1.55; min-height:2.5rem; transition:opacity .4s; }
 
-    /* Result */
-    #result-section { display:none; }
-    #result-section.show { display:block; }
     .result-header { display:flex; align-items:center; gap:.75rem; margin-bottom:1.25rem; }
     .result-badge { display:flex; align-items:center; gap:.5rem; padding:.4rem .9rem; background:rgba(0,200,150,.1); border:1px solid rgba(0,200,150,.3); border-radius:999px; color:var(--success); font-size:.8rem; font-weight:500; }
     .result-badge::before { content:'✓'; font-weight:700; }
@@ -133,7 +129,6 @@
     .again-btn { width:100%; margin-top:1rem; padding:.7rem; background:none; border:1px solid var(--border); border-radius:10px; color:var(--muted); font-family:'IBM Plex Sans Arabic',sans-serif; font-size:.88rem; cursor:pointer; transition:all .2s; }
     .again-btn:hover { border-color:var(--accent); color:var(--accent); }
 
-    /* Error */
     .error-box { display:none; margin-top:1rem; padding:.9rem 1.1rem; background:rgba(255,77,109,.08); border:1px solid rgba(255,77,109,.3); border-radius:10px; color:var(--danger); font-size:.9rem; line-height:1.6; }
     .error-box.show { display:block; }
     .reload-page-btn { display:none; margin-top:1rem; width:100%; padding:.8rem; background:var(--surface); border:1px solid var(--danger); color:var(--danger); border-radius:10px; cursor:pointer; font-family:inherit; font-weight:600; }
@@ -145,17 +140,28 @@
     @keyframes spin { to{transform:rotate(360deg)} }
     @keyframes breathe { 0%,100%{opacity:.4} 50%{opacity:1} }
     @keyframes fadeUp { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
+    @keyframes shimmer { 0%{transform:translateX(-150%)} 100%{transform:translateX(350%)} }
   </style>
 </head>
 <body>
 <div class="grid-bg"></div>
+
+<div id="auth-overlay">
+  <div class="auth-card">
+    <h2>🔒 مصادقة الدخول</h2>
+    <p>يرجى إدخال رمز المرور الخاص بك للمتابعة</p>
+    <div class="auth-error" id="auth-error">الرمز غير صحيح أو مطلوب</div>
+    <input type="password" id="pin-input" placeholder="****" maxlength="8" autocomplete="off" />
+    <button class="submit-btn" id="auth-submit-btn">تأكيد ومتابعة</button>
+  </div>
+</div>
+
 <main class="page">
   <header class="header">
     <h1>دمج الصوت<br>مع <em>الفيديو</em></h1>
     <p>ارفع ملف الصوت واختر الفيديوهات أو اتركها للاختيار التلقائي</p>
   </header>
 
-  <!-- Upload Section -->
   <div class="card" id="upload-section">
     <div class="drop-zone" id="drop-zone">
       <input type="file" id="audio-file" accept="audio/*,.mp3,.wav,.m4a,.aac,.ogg,.flac,.wma,.opus" />
@@ -176,7 +182,6 @@
       <span id="size-warning-text"></span>
     </div>
 
-    <!-- Video Selection -->
     <div id="video-selection-section">
       <div style="margin-top:1.5rem; margin-bottom:.75rem;">
         <div class="section-title">🎬 اختر الفيديوهات</div>
@@ -201,7 +206,6 @@
     </button>
   </div>
 
-  <!-- Compress Section -->
   <div class="card" id="compress-section">
     <span class="compress-icon">🗜️</span>
     <div class="compress-title">جاري ضغط الصوت…</div>
@@ -214,7 +218,6 @@
     </div>
   </div>
 
-  <!-- Loading Section -->
   <div class="card" id="loading-section">
     <div class="loader-wrap">
       <div class="loader-ring"></div><div class="loader-ring"></div>
@@ -240,7 +243,6 @@
     </div>
   </div>
 
-  <!-- Result Section -->
   <div class="card" id="result-section">
     <div class="result-header"><div class="result-badge">اكتملت المعالجة</div></div>
     <div class="video-wrapper"><video id="result-video" controls playsinline></video></div>
@@ -256,7 +258,7 @@
 
 <script>
 // ══════════════════════════════════════════════════════
-// CONFIG — عدّل هذه القيم حسب بيئتك
+// CONFIG
 // ══════════════════════════════════════════════════════
 const CONFIG = {
   BASE_URL:          'https://tasneemahmed-n8n-test.hf.space/webhook',
@@ -271,15 +273,20 @@ const CONFIG = {
   COMPRESS_BITRATE:  64_000,
 };
 
-// استخراج client_id من URL
 function getClientId() {
   const params = new URLSearchParams(window.location.search);
   return params.get('client_id') || params.get('clientId') || null;
 }
 
 const CLIENT_ID = getClientId();
+let USER_PIN = localStorage.getItem(`auth_pin_${CLIENT_ID}`) || null;
 
 // DOM Refs
+const authOverlay     = document.getElementById('auth-overlay');
+const pinInput        = document.getElementById('pin-input');
+const authSubmitBtn   = document.getElementById('auth-submit-btn');
+const authError       = document.getElementById('auth-error');
+
 const dropZone        = document.getElementById('drop-zone');
 const fileInput       = document.getElementById('audio-file');
 const fileInfo        = document.getElementById('file-info');
@@ -313,7 +320,6 @@ const selectionCount  = document.getElementById('selection-count');
 const clearSelBtn     = document.getElementById('clear-selection-btn');
 const randomHint      = document.getElementById('random-hint');
 
-// State
 let selectedFile      = null;
 let pollingInterval   = null;
 let elapsedInterval   = null;
@@ -322,38 +328,63 @@ let startTime         = 0;
 let availableVideos   = [];
 let selectedVideoIds  = [];
 
-// ── فحص client_id فور تحميل الصفحة ──────────────────
-(function checkClientOnLoad() {
+// ── عملية المصادقة (Auth Flow) ──────────────────────
+(function initApp() {
   if (!CLIENT_ID) {
-    // إذا لا يوجد client_id في URL، نعرض خطأ
     showSection('upload');
-    showFatalError('❌ رابط غير صالح. يرجى التواصل مع الدعم الفني للحصول على رابطك الشخصي.');
+    showFatalError('❌ رابط غير صالح. يرجى التأكد من الرابط الخاص بك.');
     return;
   }
-  // جلب قائمة الفيديوهات فوراً
-  loadClientVideos();
+
+  if (!USER_PIN) {
+    authOverlay.style.display = 'flex';
+  } else {
+    loadClientVideos();
+  }
 })();
 
-// ── تحميل فيديوهات العميل ────────────────────────────
+authSubmitBtn.addEventListener('click', () => {
+  const pin = pinInput.value.trim();
+  if (!pin) {
+    authError.style.display = 'block';
+    return;
+  }
+  authError.style.display = 'none';
+  USER_PIN = pin;
+  localStorage.setItem(`auth_pin_${CLIENT_ID}`, USER_PIN);
+  authOverlay.style.display = 'none';
+  loadClientVideos();
+});
+
+// التعامل مع الخطأ 401 (PIN غير صالح)
+function handleInvalidPin() {
+  localStorage.removeItem(`auth_pin_${CLIENT_ID}`);
+  USER_PIN = null;
+  authError.textContent = "رمز المرور غير صحيح، حاول مرة أخرى.";
+  authError.style.display = 'block';
+  authOverlay.style.display = 'flex';
+  pinInput.value = '';
+}
+
+// ── تحميل الفيديوهات ─────────────────────────────────
 async function loadClientVideos() {
   videoSelSec.style.display = 'block';
-  videosContainer.innerHTML = '<div class="videos-loading">⏳ جاري تحميل الفيديوهات…</div>';
+  videosContainer.innerHTML = '<div class="videos-loading">⏳ جاري الاتصال والخادم للتحقق...</div>';
   selectionInfo.style.display = 'none';
 
   try {
-    const url = `${CONFIG.BASE_URL}/${CONFIG.LIST_VIDEOS_PATH}?client_id=${encodeURIComponent(CLIENT_ID)}`;
+    const url = `${CONFIG.BASE_URL}/${CONFIG.LIST_VIDEOS_PATH}?client_id=${encodeURIComponent(CLIENT_ID)}&pin=${encodeURIComponent(USER_PIN)}`;
     const res = await fetch(url, { method: 'GET', signal: AbortSignal.timeout(30000) });
     const data = await res.json();
 
     if (!res.ok || data.error) {
-      const code = data.code || '';
-      if (code === 'PAYMENT_REQUIRED') {
-        // إعادة التوجيه لصفحة الدفع
-        window.location.href = 'payment-warning.html';
+      if (data.code === 'INVALID_PIN' || res.status === 401) {
+        handleInvalidPin();
+        videosContainer.innerHTML = '<div class="videos-error">⚠️ بانتظار المصادقة...</div>';
         return;
       }
-      if (code === 'CLIENT_NOT_FOUND') {
-        showFatalError('❌ لم يتم العثور على حسابك. يرجى التواصل مع الدعم.');
+      if (data.code === 'PAYMENT_REQUIRED') {
+        window.location.href = 'payment-warning.html';
         return;
       }
       throw new Error(data.message || 'فشل تحميل الفيديوهات');
@@ -364,20 +395,19 @@ async function loadClientVideos() {
 
   } catch(e) {
     if (e.name === 'AbortError' || e.name === 'TimeoutError') {
-      videosContainer.innerHTML = '<div class="videos-error">⚠️ انتهت مهلة الاتصال. تحقق من الإنترنت وأعد تحميل الصفحة.</div>';
+      videosContainer.innerHTML = '<div class="videos-error">⚠️ انتهت مهلة الاتصال. تحقق من الإنترنت.</div>';
     } else {
       videosContainer.innerHTML = `<div class="videos-error">⚠️ ${e.message}</div>`;
     }
   }
 }
 
-// ── رسم thumbnails ────────────────────────────────────
+// ── رسم الفيديوهات ───────────────────────────────────
 function renderVideoThumbnails(videos) {
   if (!videos || videos.length === 0) {
     videosContainer.innerHTML = '<div class="videos-error">⚠️ لا توجد فيديوهات في مجلدك حتى الآن.</div>';
     return;
   }
-
   const grid = document.createElement('div');
   grid.className = 'videos-grid';
 
@@ -399,77 +429,58 @@ function renderVideoThumbnails(videos) {
         <div class="thumb-overlay"><div class="check-icon">✓</div></div>
         <div class="thumb-name">${escapeHtml(video.name)}</div>`;
     }
-
     thumb.addEventListener('click', () => toggleVideoSelection(video.id, thumb));
     grid.appendChild(thumb);
   });
-
   videosContainer.innerHTML = '';
   videosContainer.appendChild(grid);
   selectionInfo.style.display = 'flex';
   updateSelectionUI();
 }
 
-function escapeHtml(str) {
-  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-}
-
+function escapeHtml(str) { return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 function toggleVideoSelection(id, el) {
   const idx = selectedVideoIds.indexOf(id);
-  if (idx === -1) {
-    selectedVideoIds.push(id);
-    el.classList.add('selected');
-  } else {
-    selectedVideoIds.splice(idx, 1);
-    el.classList.remove('selected');
-  }
+  if (idx === -1) { selectedVideoIds.push(id); el.classList.add('selected'); } 
+  else { selectedVideoIds.splice(idx, 1); el.classList.remove('selected'); }
   updateSelectionUI();
 }
-
 function updateSelectionUI() {
   const count = selectedVideoIds.length;
   selectionCount.textContent = count > 0 ? `${count} فيديو مختار` : 'لم يتم اختيار أي فيديو';
   randomHint.style.display = count === 0 ? 'block' : 'none';
 }
-
 clearSelBtn.addEventListener('click', () => {
   selectedVideoIds = [];
   document.querySelectorAll('.video-thumb.selected').forEach(el => el.classList.remove('selected'));
   updateSelectionUI();
 });
 
-// ── Helpers ───────────────────────────────────────────
+// ── المساعدات البصرية والضغط ─────────────────────────
 function formatBytes(b) {
   if (b < 1024) return b + ' B';
   if (b < 1048576) return (b/1024).toFixed(1) + ' KB';
   return (b/1048576).toFixed(2) + ' MB';
 }
-
 function fetchWithTimeout(url, options, ms) {
   const ctrl = new AbortController();
-  const t    = setTimeout(() => ctrl.abort(), ms);
+  const t = setTimeout(() => ctrl.abort(), ms);
   return fetch(url, { ...options, signal: ctrl.signal }).finally(() => clearTimeout(t));
 }
-
-function showError(msg)      { errorBox.textContent = msg; errorBox.classList.add('show'); }
+function showError(msg) { errorBox.textContent = msg; errorBox.classList.add('show'); }
 function showFatalError(msg) { showError(msg); loadingSec.classList.add('failed'); reloadPageBtn.classList.add('show'); submitBtn.style.display = 'none'; }
-function hideError()         { errorBox.classList.remove('show'); errorBox.textContent = ''; reloadPageBtn.classList.remove('show'); submitBtn.style.display = 'flex'; loadingSec.classList.remove('failed'); }
-
+function hideError() { errorBox.classList.remove('show'); errorBox.textContent = ''; reloadPageBtn.classList.remove('show'); submitBtn.style.display = 'flex'; loadingSec.classList.remove('failed'); }
 function showSection(name) {
-  uploadSec  .style.display = name === 'upload'   ? 'block' : 'none';
+  uploadSec.style.display = name === 'upload' ? 'block' : 'none';
   compressSec.style.display = name === 'compress' ? 'block' : 'none';
-  loadingSec .style.display = name === 'loading'  ? 'block' : 'none';
-  resultSec  .style.display = name === 'result'   ? 'block' : 'none';
+  loadingSec.style.display = name === 'loading' ? 'block' : 'none';
+  resultSec.style.display = name === 'result' ? 'block' : 'none';
 }
 
-// Steps
 const STEP_AT = { 2: 5, 3: 10, 4: 40, 5: 140 };
 function updateStepsFromElapsed(sec) {
   let cur = 1;
-  if      (sec >= STEP_AT[5]) cur = 5;
-  else if (sec >= STEP_AT[4]) cur = 4;
-  else if (sec >= STEP_AT[3]) cur = 3;
-  else if (sec >= STEP_AT[2]) cur = 2;
+  if (sec >= STEP_AT[5]) cur = 5; else if (sec >= STEP_AT[4]) cur = 4; else if (sec >= STEP_AT[3]) cur = 3; else if (sec >= STEP_AT[2]) cur = 2;
   for (let i = 1; i <= 5; i++) {
     const s = document.getElementById(`step-${i}`);
     if (!s || s.classList.contains('done')) continue;
@@ -477,32 +488,21 @@ function updateStepsFromElapsed(sec) {
     if (i < cur) s.classList.add('done'); else if (i === cur) s.classList.add('active');
   }
 }
-function setStepDone(n)    { const s = document.getElementById(`step-${n}`); if (s) { s.classList.remove('active'); s.classList.add('done'); } }
+function setStepDone(n) { const s = document.getElementById(`step-${n}`); if (s) { s.classList.remove('active'); s.classList.add('done'); } }
 function setAllStepsDone() { for (let i = 1; i <= 5; i++) setStepDone(i); }
-function resetSteps()      {
+function resetSteps() {
   for (let i = 1; i <= 5; i++) { const s = document.getElementById(`step-${i}`); if (s) s.classList.remove('active','done'); }
   document.getElementById('step-1').classList.add('active');
 }
 
-// Tips
-const TIPS = [
-  'يعمل الخادم الآن على تنزيل الفيديوهات ودمجها مع الصوت…',
-  '⚠️ لا تُغلق هذه النافذة — المعالجة تعمل في الخلفية وستكتمل تلقائياً.',
-  '⏳ قد يستغرق الأمر 2-3 دقائق حسب عدد الفيديوهات وطول الصوت.',
-  '✅ بعد الانتهاء ستظهر لك شاشة المعاينة والتنزيل مباشرةً.',
-  '📱 إذا كنت على هاتف، أبقِ الشاشة مضاءة لتجنب انقطاع الاتصال.',
-];
+const TIPS = ['يعمل الخادم الآن على تنزيل الفيديوهات ودمجها...', '⚠️ المعالجة تعمل في الخلفية وستكتمل تلقائياً.', '⏳ قد يستغرق الأمر بضع دقائق.', '✅ بعد الانتهاء ستظهر لك شاشة التنزيل.'];
 let tipIndex = 0, tipTimer = null;
 function startTips() {
   tipIndex = 0; tipText.textContent = TIPS[0];
-  tipTimer = setInterval(() => {
-    tipText.style.opacity = '0';
-    setTimeout(() => { tipIndex = (tipIndex+1)%TIPS.length; tipText.textContent = TIPS[tipIndex]; tipText.style.opacity = '1'; }, 400);
-  }, 10000);
+  tipTimer = setInterval(() => { tipText.style.opacity = '0'; setTimeout(() => { tipIndex = (tipIndex+1)%TIPS.length; tipText.textContent = TIPS[tipIndex]; tipText.style.opacity = '1'; }, 400); }, 10000);
 }
 function stopTips() { if (tipTimer) { clearInterval(tipTimer); tipTimer = null; } }
 
-// Elapsed Timer
 function startElapsedTimer() {
   elapsedInterval = setInterval(() => {
     const sec = Math.floor((Date.now() - startTime) / 1000);
@@ -515,85 +515,58 @@ function startElapsedTimer() {
 }
 function stopElapsedTimer() { if (elapsedInterval) { clearInterval(elapsedInterval); elapsedInterval = null; } }
 
-// Wake Lock & Cleanup
 async function requestWakeLock() { try { if ('wakeLock' in navigator) wakeLock = await navigator.wakeLock.request('screen'); } catch(e) {} }
 async function releaseWakeLock() { if (wakeLock) { try { await wakeLock.release(); wakeLock = null; } catch(e) {} } }
-function enableExitProtection()  { window.onbeforeunload = () => 'جاري المعالجة... هل أنت متأكد؟'; }
+function enableExitProtection() { window.onbeforeunload = () => 'جاري المعالجة... هل أنت متأكد؟'; }
 function disableExitProtection() { window.onbeforeunload = null; }
-function cleanup() {
-  disableExitProtection(); releaseWakeLock(); stopElapsedTimer(); stopTips();
-  if (pollingInterval) { clearInterval(pollingInterval); pollingInterval = null; }
-  window.removeEventListener('offline', handleOffline);
-}
-function handleOffline() {
-  cleanup();
-  showFatalError('❌ انقطع الاتصال بالإنترنت! أعد تحميل الصفحة وحاول مرة أخرى.');
-  showSection('upload');
-}
+function cleanup() { disableExitProtection(); releaseWakeLock(); stopElapsedTimer(); stopTips(); if (pollingInterval) { clearInterval(pollingInterval); pollingInterval = null; } window.removeEventListener('offline', handleOffline); }
+function handleOffline() { cleanup(); showFatalError('❌ انقطع الاتصال بالإنترنت! أعد تحميل الصفحة.'); showSection('upload'); }
 
-// Audio Compression
 async function compressAudio(file, onProgress) {
   const buf = await file.arrayBuffer();
   const AudioCtx = window.AudioContext || window.webkitAudioContext;
-  if (!AudioCtx) throw new Error('خاصية معالجة الصوت غير مدعومة في هذا المتصفح');
+  if (!AudioCtx) throw new Error('خاصية معالجة الصوت غير مدعومة');
   const ctx = new AudioCtx();
   let audioBuffer;
-  try { audioBuffer = await ctx.decodeAudioData(buf); }
-  catch(e) { ctx.close(); throw new Error('تعذّر فك ترميز ملف الصوت. يرجى تجربة ملف آخر.'); }
+  try { audioBuffer = await ctx.decodeAudioData(buf); } catch(e) { ctx.close(); throw new Error('تعذّر فك ترميز ملف الصوت.'); }
   const types = ['audio/webm;codecs=opus','audio/webm','audio/ogg;codecs=opus','audio/ogg',''];
-  const mime  = types.find(t => !t || MediaRecorder.isTypeSupported(t)) || '';
-  const dest  = ctx.createMediaStreamDestination();
-  const src   = ctx.createBufferSource();
-  src.buffer  = audioBuffer; src.connect(dest);
-  const opts  = { audioBitsPerSecond: CONFIG.COMPRESS_BITRATE };
+  const mime = types.find(t => !t || MediaRecorder.isTypeSupported(t)) || '';
+  const dest = ctx.createMediaStreamDestination();
+  const src = ctx.createBufferSource();
+  src.buffer = audioBuffer; src.connect(dest);
+  const opts = { audioBitsPerSecond: CONFIG.COMPRESS_BITRATE };
   if (mime) opts.mimeType = mime;
   let rec;
-  try { rec = new MediaRecorder(dest.stream, opts); }
-  catch(e) { ctx.close(); throw new Error('المتصفح لا يدعم الضغط. يرجى تحديث المتصفح.'); }
+  try { rec = new MediaRecorder(dest.stream, opts); } catch(e) { ctx.close(); throw new Error('المتصفح لا يدعم الضغط.'); }
   const chunks = [];
   return new Promise((resolve, reject) => {
     rec.ondataavailable = e => { if (e.data?.size > 0) chunks.push(e.data); };
-    rec.onerror  = () => { ctx.close(); reject(new Error('خطأ أثناء ضغط الملف.')); };
-    rec.onstop   = () => {
+    rec.onerror = () => { ctx.close(); reject(new Error('خطأ أثناء ضغط الملف.')); };
+    rec.onstop = () => {
       ctx.close();
-      const fm  = mime || 'audio/webm';
+      const fm = mime || 'audio/webm';
       const ext = fm.includes('ogg') ? 'ogg' : 'webm';
       resolve(new File([new Blob(chunks, { type: fm })], file.name.replace(/\.[^.]+$/, '') + '.' + ext, { type: fm }));
     };
     const dur = audioBuffer.duration, t0 = Date.now();
-    const iv  = setInterval(() => {
-      const p = Math.min((Date.now()-t0)/1000/dur, 0.97);
-      onProgress?.(p); if (p >= 0.97) clearInterval(iv);
-    }, 300);
+    const iv = setInterval(() => { const p = Math.min((Date.now()-t0)/1000/dur, 0.97); onProgress?.(p); if (p >= 0.97) clearInterval(iv); }, 300);
     src.onended = () => { clearInterval(iv); onProgress?.(1); rec.stop(); };
     src.start(0); rec.start(200);
   });
 }
 
-// File Handling
 function updateSizeWarning(file) {
-  if (!file || file.size <= CONFIG.MAX_SAFE_SIZE) {
-    sizeWarning.classList.remove('show');
-    submitLabel.textContent = 'ابدأ المعالجة';
-    return;
-  }
+  if (!file || file.size <= CONFIG.MAX_SAFE_SIZE) { sizeWarning.classList.remove('show'); submitLabel.textContent = 'ابدأ المعالجة'; return; }
   sizeWarningTxt.textContent = `حجم الملف (${formatBytes(file.size)}) كبير. سيتم تقليصه تلقائياً.`;
-  sizeWarning.classList.add('show');
-  submitLabel.textContent = 'تجهيز ورفع';
+  sizeWarning.classList.add('show'); submitLabel.textContent = 'تجهيز ورفع';
 }
 function setFile(file) {
   if (!file) return;
-  selectedFile = file;
-  fileNameTxt.textContent = file.name;
-  fileSizeTxt.textContent = formatBytes(file.size);
-  fileInfo.classList.add('show');
-  submitBtn.disabled = false;
-  hideError();
-  updateSizeWarning(file);
+  selectedFile = file; fileNameTxt.textContent = file.name; fileSizeTxt.textContent = formatBytes(file.size);
+  fileInfo.classList.add('show'); submitBtn.disabled = false; hideError(); updateSizeWarning(file);
 }
 function clearFile() {
-  selectedFile = null; fileInput.value = '';
-  fileInfo.classList.remove('show'); sizeWarning.classList.remove('show');
+  selectedFile = null; fileInput.value = ''; fileInfo.classList.remove('show'); sizeWarning.classList.remove('show');
   submitLabel.textContent = 'ابدأ المعالجة'; submitBtn.disabled = true;
 }
 
@@ -601,25 +574,19 @@ fileInput.addEventListener('change', () => { if (fileInput.files[0]) setFile(fil
 removeBtn.addEventListener('click', e => { e.preventDefault(); clearFile(); });
 dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('dragover'); });
 dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
-dropZone.addEventListener('drop', e => {
-  e.preventDefault(); dropZone.classList.remove('dragover');
-  const f = e.dataTransfer?.files?.[0]; if (f) setFile(f);
-});
+dropZone.addEventListener('drop', e => { e.preventDefault(); dropZone.classList.remove('dragover'); const f = e.dataTransfer?.files?.[0]; if (f) setFile(f); });
 
-// ══════════════════════════════════════════════════════
-// SUBMIT
-// ══════════════════════════════════════════════════════
+// ── الإرسال الرئيسي (Submit) ──────────────────────────
 submitBtn.addEventListener('click', async () => {
   hideError();
   if (!navigator.onLine) { showFatalError('❌ لا يوجد اتصال بالإنترنت.'); return; }
-  if (!CLIENT_ID)        { showFatalError('❌ رابط غير صالح. تواصل مع الدعم.'); return; }
-  if (!selectedFile)     { showError('⚠️ اختر ملف صوت أولاً'); return; }
+  if (!CLIENT_ID || !USER_PIN) { showFatalError('❌ بيانات المصادقة غير صالحة.'); return; }
+  if (!selectedFile) { showError('⚠️ اختر ملف صوت أولاً'); return; }
 
   await requestWakeLock();
   enableExitProtection();
   window.addEventListener('offline', handleOffline);
 
-  // ضغط إذا لزم
   let fileToUpload = selectedFile;
   if (selectedFile.size > CONFIG.MAX_SAFE_SIZE) {
     showSection('compress');
@@ -627,133 +594,80 @@ submitBtn.addEventListener('click', async () => {
     compressOrig.textContent = `الحجم الأصلي: ${formatBytes(selectedFile.size)}`;
     try {
       fileToUpload = await compressAudio(selectedFile, p => {
-        const pct = Math.round(p * 100);
-        compressFill.style.width = pct + '%'; compressPct.textContent = pct + '%';
+        const pct = Math.round(p * 100); compressFill.style.width = pct + '%'; compressPct.textContent = pct + '%';
       });
-    } catch(err) {
-      cleanup(); showError('❌ خطأ في تجهيز الملف: ' + err.message); showSection('upload'); return;
-    }
+    } catch(err) { cleanup(); showError('❌ خطأ في تجهيز الملف: ' + err.message); showSection('upload'); return; }
   }
 
   showSection('loading');
-  resetSteps();
-  progressFill.style.width = '0%'; elapsedDisp.textContent = '00:00';
-  startTips();
+  resetSteps(); progressFill.style.width = '0%'; elapsedDisp.textContent = '00:00'; startTips();
 
   let jobId = null;
   try {
     const form = new FormData();
     form.append('audio_file', fileToUpload, fileToUpload.name);
     form.append('client_id', CLIENT_ID);
+    form.append('pin', USER_PIN); // إرسال رمز المرور مع الرفع
     form.append('selected_video_ids', JSON.stringify(selectedVideoIds));
 
-    const res = await fetchWithTimeout(
-      `${CONFIG.BASE_URL}/${CONFIG.PROCESS_PATH}`,
-      { method: 'POST', body: form },
-      CONFIG.UPLOAD_TIMEOUT_MS
-    );
-
-    const buffer      = await res.arrayBuffer();
+    const res = await fetchWithTimeout(`${CONFIG.BASE_URL}/${CONFIG.PROCESS_PATH}`, { method: 'POST', body: form }, CONFIG.UPLOAD_TIMEOUT_MS);
+    const buffer = await res.arrayBuffer();
     const contentType = res.headers.get('Content-Type') || '';
-    const rawText     = new TextDecoder().decode(buffer.slice(0, 400));
+    const rawText = new TextDecoder().decode(buffer.slice(0, 400));
 
     if (!res.ok) {
-      let errData = {};
-      try { errData = JSON.parse(new TextDecoder().decode(buffer)); } catch(e) {}
-      const code = errData.code || '';
-      if (code === 'PAYMENT_REQUIRED') {
-        cleanup(); window.location.href = 'payment-warning.html'; return;
-      }
-      if (res.status === 413) throw new Error('❌ حجم الملف يتجاوز الحد المسموح به. جرب ملفاً أقصر.');
-      if ([500,502,503,504].includes(res.status)) throw new Error('❌ الخادم مشغول حالياً. انتظر دقيقة وحاول مجدداً.');
-      throw new Error(errData.message || `❌ خطأ غير متوقع (${res.status})`);
+      let errData = {}; try { errData = JSON.parse(new TextDecoder().decode(buffer)); } catch(e) {}
+      if (errData.code === 'INVALID_PIN' || res.status === 401) { cleanup(); handleInvalidPin(); return; }
+      if (errData.code === 'PAYMENT_REQUIRED') { cleanup(); window.location.href = 'payment-warning.html'; return; }
+      if (res.status === 413) throw new Error('❌ حجم الملف يتجاوز الحد المسموح.');
+      throw new Error(errData.message || `❌ خطأ الخادم (${res.status})`);
     }
 
-    // هل الرد MP4 مباشر؟
     const bytes = new Uint8Array(buffer);
     const isMp4 = bytes.length > 8 && bytes[4]===0x66 && bytes[5]===0x74 && bytes[6]===0x79 && bytes[7]===0x70;
     if (isMp4 || contentType.includes('video')) {
       const url = URL.createObjectURL(new Blob([buffer], { type: 'video/mp4' }));
-      progressFill.style.width = '100%'; setAllStepsDone();
-      resultVideo.src = url; downloadBtn.href = url;
+      progressFill.style.width = '100%'; setAllStepsDone(); resultVideo.src = url; downloadBtn.href = url;
       cleanup(); setTimeout(() => showSection('result'), 400); return;
     }
 
-    // JSON → job_id
     if (contentType.includes('json') || rawText.trim().startsWith('{')) {
-      let data;
-      try { data = JSON.parse(new TextDecoder().decode(buffer)); } catch { throw new Error('❌ استجابة النظام غير مفهومة.'); }
-      jobId = data.job_id;
-      if (!jobId) throw new Error(data.message || '❌ فشل النظام في استلام الطلب.');
-      setStepDone(1); setStepDone(2);
-      startTime = Date.now(); startElapsedTimer();
-    } else {
-      throw new Error('❌ خطأ داخلي في النظام. حاول لاحقاً.');
-    }
+      let data; try { data = JSON.parse(new TextDecoder().decode(buffer)); } catch { throw new Error('❌ استجابة غير مفهومة.'); }
+      jobId = data.job_id; if (!jobId) throw new Error(data.message || '❌ فشل استلام الطلب.');
+      setStepDone(1); setStepDone(2); startTime = Date.now(); startElapsedTimer();
+    } else { throw new Error('❌ خطأ داخلي. حاول لاحقاً.'); }
+  } catch(err) { cleanup(); showFatalError(err.name === 'AbortError' ? '❌ انتهت مهلة الرفع.' : (err.message || '❌ خطأ غير متوقع')); showSection('upload'); return; }
 
-  } catch(err) {
-    cleanup();
-    showFatalError(err.name === 'AbortError' ? '❌ انتهت مهلة الرفع. قد يكون الملف كبيراً أو الإنترنت بطيء.' : (err.message || '❌ خطأ غير متوقع'));
-    showSection('upload'); return;
-  }
-
-  // ── Polling ────────────────────────────────────────
   pollingInterval = setInterval(async () => {
-    if (Date.now() - startTime > CONFIG.POLL_TIMEOUT_MS) {
-      cleanup();
-      showFatalError('❌ نعتذر، استغرقت المعالجة وقتاً طويلاً. جرب ملفاً أقصر.');
-      showSection('upload'); return;
-    }
-
+    if (Date.now() - startTime > CONFIG.POLL_TIMEOUT_MS) { cleanup(); showFatalError('❌ استغرقت المعالجة وقتاً طويلاً.'); showSection('upload'); return; }
     try {
-      const res = await fetchWithTimeout(
-        `${CONFIG.BASE_URL}/${CONFIG.POLL_PATH}?job_id=${encodeURIComponent(jobId)}`,
-        { method: 'GET' },
-        30000
-      );
+      const res = await fetchWithTimeout(`${CONFIG.BASE_URL}/${CONFIG.POLL_PATH}?job_id=${encodeURIComponent(jobId)}&pin=${encodeURIComponent(USER_PIN)}`, { method: 'GET' }, 30000);
       if (!res.ok) return;
 
       const buffer = await res.arrayBuffer();
-      const bytes  = new Uint8Array(buffer);
-      const ct     = res.headers.get('Content-Type') || '';
-      const isMp4  = bytes.length > 8 && bytes[4]===0x66 && bytes[5]===0x74 && bytes[6]===0x79 && bytes[7]===0x70;
-      const isVideo = ct.includes('video') || ct.includes('octet-stream') || isMp4;
+      const ct = res.headers.get('Content-Type') || '';
+      const isVideo = ct.includes('video') || ct.includes('octet-stream');
 
-      if (isVideo && bytes.length > 1000) {
+      if (isVideo && buffer.byteLength > 1000) {
         clearInterval(pollingInterval); pollingInterval = null;
         const url = URL.createObjectURL(new Blob([buffer], { type: 'video/mp4' }));
-        progressFill.style.width = '100%'; setAllStepsDone();
-        resultVideo.src = url; downloadBtn.href = url;
+        progressFill.style.width = '100%'; setAllStepsDone(); resultVideo.src = url; downloadBtn.href = url;
         cleanup(); setTimeout(() => showSection('result'), 500); return;
       }
-
       try {
         const data = JSON.parse(new TextDecoder().decode(buffer));
-        if (data.status === 'error') {
-          clearInterval(pollingInterval); pollingInterval = null;
-          cleanup();
-          showFatalError('❌ نعتذر، تعذّر إكمال المعالجة. حاول مرة أخرى.');
-          showSection('upload');
-        }
-      } catch { /* still processing */ }
-    } catch(err) { /* network hiccup, retry next interval */ }
+        if (data.status === 'error') { clearInterval(pollingInterval); pollingInterval = null; cleanup(); showFatalError('❌ تعذّر إكمال المعالجة.'); showSection('upload'); }
+      } catch {}
+    } catch(err) {}
   }, CONFIG.POLL_INTERVAL_MS);
 });
 
-// Again
 againBtn.addEventListener('click', () => {
   if (resultVideo.src) URL.revokeObjectURL(resultVideo.src);
-  resultVideo.src = ''; downloadBtn.href = '#';
-  clearFile(); hideError(); cleanup(); resetSteps();
-  selectedVideoIds = [];
-  document.querySelectorAll('.video-thumb.selected').forEach(el => el.classList.remove('selected'));
-  updateSelectionUI();
-  progressFill.style.width = '0%'; elapsedDisp.textContent = '00:00';
-  showSection('upload');
+  resultVideo.src = ''; downloadBtn.href = '#'; clearFile(); hideError(); cleanup(); resetSteps();
+  selectedVideoIds = []; document.querySelectorAll('.video-thumb.selected').forEach(el => el.classList.remove('selected'));
+  updateSelectionUI(); progressFill.style.width = '0%'; elapsedDisp.textContent = '00:00'; showSection('upload');
 });
-
-// Init
-showSection('upload');
 </script>
 </body>
 </html>
