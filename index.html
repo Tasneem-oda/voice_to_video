@@ -33,6 +33,7 @@
     .header h1 { font-size:clamp(1.8rem,5vw,2.8rem); font-weight:700; letter-spacing:-.02em; line-height:1.15; }
     .header h1 em { font-style:normal; background:linear-gradient(135deg,var(--accent),var(--accent2)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
     .header p { margin-top:.75rem; color:var(--muted); font-size:.95rem; font-weight:300; }
+    #welcome-banner { color:var(--accent); font-size:1.1rem; font-weight:600; margin-bottom:0.5rem; animation:fadeUp 0.5s ease; }
 
     /* Card & Drop Zone */
     .card { width:100%; max-width:600px; background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:2rem; box-shadow:var(--glow); animation:fadeUp .5s ease both; }
@@ -71,6 +72,15 @@
     .clear-selection-btn { background:none; border:none; color:var(--accent2); cursor:pointer; font-size:.8rem; font-family:inherit; transition:color .2s; }
     .clear-selection-btn:hover { color:var(--accent); }
     .random-hint { padding:.5rem .8rem; background:rgba(123,97,255,.07); border:1px solid rgba(123,97,255,.2); border-radius:8px; font-size:.75rem; color:var(--accent2); text-align:center; margin-top:.75rem; }
+
+    /* Mobile Optimization for Videos Grid */
+    @media (max-width: 600px) {
+      .videos-grid { grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 0.5rem; }
+      .video-thumb .thumb-name { font-size: 0.55rem; padding: 0.2rem; }
+      .video-thumb .check-icon { width: 22px; height: 22px; font-size: 0.8rem; }
+      .section-title { font-size: 0.95rem; }
+      .section-sub { font-size: 0.75rem; }
+    }
 
     /* UI States */
     .videos-loading { text-align:center; padding:2rem; color:var(--muted); font-size:.88rem; }
@@ -190,6 +200,7 @@
 
 <main class="page">
   <header class="header">
+    <div id="welcome-banner" style="display:none;">مرحباً، <span id="client-name-display"></span> ✨</div>
     <h1>دمج الصوت<br>مع <em>الفيديو</em></h1>
     <p>ارفع ملف الصوت واختر الفيديوهات أو اتركها للاختيار التلقائي</p>
   </header>
@@ -320,6 +331,9 @@ const pinInput        = document.getElementById('pin-input');
 const authSubmitBtn   = document.getElementById('auth-submit-btn');
 const authError       = document.getElementById('auth-error');
 
+const welcomeBanner   = document.getElementById('welcome-banner');
+const clientNameDisplay = document.getElementById('client-name-display');
+
 const dropZone        = document.getElementById('drop-zone');
 const fileInput       = document.getElementById('audio-file');
 const fileInfo        = document.getElementById('file-info');
@@ -427,6 +441,11 @@ async function loadClientVideos() {
         return;
       }
       throw new Error(data.message || 'فشل تحميل الفيديوهات');
+    }
+
+    if (data.client_name) {
+      clientNameDisplay.textContent = data.client_name;
+      welcomeBanner.style.display = 'block';
     }
 
     availableVideos = data.videos || [];
