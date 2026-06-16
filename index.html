@@ -697,25 +697,41 @@ submitBtn.addEventListener('click', async () => {
   } catch(err) { cleanup(); showFatalError(err.name === 'AbortError' ? '❌ انتهت مهلة الرفع.' : (err.message || '❌ خطأ غير متوقع')); showSection('upload'); return; }
 
   pollingInterval = setInterval(async () => {
-    if (Date.now() - startTime > CONFIG.POLL_TIMEOUT_MS) { cleanup(); showFatalError('❌ استغرقت المعالجة وقتاً طويلاً.'); showSection('upload'); return; }
+    if (Date.now() - startTime > CONFIG.POLL_TIMEOUT_MS) { 
+      cleanup(); showFatalError('❌ استغرقت المعالجة وقتاً طويلاً.'); showSection('upload'); return; 
+    }
     try {
-      const res = await fetchWithTimeout(`${CONFIG.BASE_URL}/${CONFIG.POLL_PATH}?job_id=${encodeURIComponent(jobId)}&pin=${encodeURIComponent(USER_PIN)}`, { method: 'GET' }, 30000);
+      // نقلل وقت الانتظار لأننا نطلب JSON فقط الآن
+      const res = await fetchWithTimeout(`${CONFIG.BASE_URL}/${CONFIG.POLL_PATH}?job_id=${encodeURIComponent(jobId)}&pin=${encodeURIComponent(USER_PIN)}`, { method: 'GET' }, 10000);
       if (!res.ok) return;
 
-      const buffer = await res.arrayBuffer();
       const ct = res.headers.get('Content-Type') || '';
-      const isVideo = ct.includes('video') || ct.includes('octet-stream');
 
-      if (isVideo && buffer.byteLength > 1000) {
-        clearInterval(pollingInterval); pollingInterval = null;
-        const url = URL.createObjectURL(new Blob([buffer], { type: 'video/mp4' }));
-        progressFill.style.width = '100%'; setAllStepsDone(); resultVideo.src = url; downloadBtn.href = url;
-        cleanup(); setTimeout(() => showSection('result'), 500); return;
+      if (ct.includes('application/json') || ct.includes('text/plain')) {
+        const data = await res.json();
+
+        if (data.status === 'error') { 
+          clearInterval(pollingInterval); pollingInterval = null; cleanup(); 
+          showFatalError('❌ تعذّر إكمال المعالجة.'); showSection('upload'); 
+        } 
+        else if (data.file_ready === true || data.status === 'done') {
+          // المعالجة انتهت، نوقف الفحص
+          clearInterval(pollingInterval); pollingInterval = null;
+
+          // بناء رابط التحميل المباشر بإضافة باراميتر download=1
+          const directDownloadUrl = `${CONFIG.BASE_URL}/${CONFIG.POLL_PATH}?job_id=${encodeURIComponent(jobId)}&pin=${encodeURIComponent(USER_PIN)}&download=1`;
+
+          progressFill.style.width = '100%'; 
+          setAllStepsDone(); 
+          
+          // إسناد الرابط مباشرة لعناصر الواجهة ليتم التحميل الأصلي بدون استهلاك الـ RAM
+          resultVideo.src = directDownloadUrl; 
+          downloadBtn.href = directDownloadUrl;
+          
+          cleanup(); 
+          setTimeout(() => showSection('result'), 500); 
+        }
       }
-      try {
-        const data = JSON.parse(new TextDecoder().decode(buffer));
-        if (data.status === 'error') { clearInterval(pollingInterval); pollingInterval = null; cleanup(); showFatalError('❌ تعذّر إكمال المعالجة.'); showSection('upload'); }
-      } catch {}
     } catch(err) {}
   }, CONFIG.POLL_INTERVAL_MS);
 });
